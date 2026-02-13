@@ -1,13 +1,5 @@
-import { PrismaClient } from '@prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
-import { Pool } from 'pg'
 import { ClientHome } from '@/components/ClientHome'
-import 'dotenv/config'
-
-// Disable static generation - always render on request
-export const dynamic = 'force-dynamic'
-
-const connectionString = process.env.DATABASE_URL
+import contactsData from '@/data/contacts.json'
 
 type Contact = {
   id: number
@@ -22,40 +14,8 @@ type Contact = {
   notes: string | null
 }
 
-// Server-side data fetching
-async function getContacts(): Promise<Contact[]> {
-  const pool = new Pool({ connectionString })
-  const adapter = new PrismaPg(pool)
-  const prisma = new PrismaClient({ adapter })
-  
-  try {
-    const contacts = await prisma.$queryRaw<Contact[]>`
-      SELECT 
-        id,
-        business_name as "businessName",
-        email,
-        website,
-        website_generator as "websiteGenerator",
-        business_type as "businessType",
-        city,
-        initial_contact as "initialContact",
-        follow_up as "followUp",
-        notes
-      FROM contacts
-      ORDER BY id
-    `
-    return contacts
-  } catch (e) {
-    console.error('DB Error:', e)
-    return []
-  } finally {
-    await prisma.$disconnect()
-    await pool.end()
-  }
-}
-
-export default async function Home() {
-  const contacts = await getContacts()
+export default function Home() {
+  const contacts = contactsData as Contact[]
   const cities = [...new Set(contacts.map(c => c.city).filter(Boolean))] as string[]
 
   return <ClientHome contacts={contacts} cities={cities} />
