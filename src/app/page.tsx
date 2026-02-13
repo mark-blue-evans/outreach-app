@@ -14,6 +14,8 @@ type Contact = {
   initialContact: string | null
   followUp: string | null
   notes: string | null
+  hookEmail: string | null
+  followUpEmail: string | null
 }
 
 export default function Home() {

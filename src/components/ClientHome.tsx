@@ -14,6 +14,8 @@ type Contact = {
   initialContact: string | null
   followUp: string | null
   notes: string | null
+  hookEmail: string | null
+  followUpEmail: string | null
 }
 
 const templates = {
@@ -67,16 +69,42 @@ function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: n
     onUpdate(contact.id, field, newValue)
   }
 
+  // Use database email if exists, otherwise fall back to template
+  const hasHookEmail = !!contact.hookEmail
+  const hasFollowUpEmail = !!contact.followUpEmail
+  
+  // Parse database emails (they include subject and body)
+  const parseEmail = (emailText: string | null) => {
+    if (!emailText) return { subject: '', body: '' }
+    const lines = emailText.split('\n')
+    let subject = ''
+    let body = ''
+    let inBody = false
+    for (const line of lines) {
+      if (line.startsWith('Subject:')) {
+        subject = line.replace('Subject:', '').trim()
+      } else if (inBody) {
+        body += line + '\n'
+      } else if (line.trim() === '') {
+        inBody = true
+      }
+    }
+    return { subject: subject.trim(), body: body.trim() }
+  }
+
   const hookData = {
     businessType: contact.businessType || 'local business',
     city: contact.city || 'your area',
     businessName: contact.businessName
   }
 
-  const hookSubject = templates.hook.subject(hookData)
-  const hookBody = templates.hook.body(hookData)
-  const proofSubject = templates.proof.subject(hookData)
-  const proofBody = templates.proof.body()
+  const dbHook = parseEmail(contact.hookEmail)
+  const hookSubject = dbHook.subject || templates.hook.subject(hookData)
+  const hookBody = dbHook.body || templates.hook.body(hookData)
+  
+  const dbProof = parseEmail(contact.followUpEmail)
+  const proofSubject = dbProof.subject || templates.proof.subject(hookData)
+  const proofBody = dbProof.body || templates.proof.body()
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
@@ -151,6 +179,8 @@ function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: n
             <h4 className="font-medium text-slate-900 mb-2 text-sm flex items-center gap-2">
               <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
               {templates.hook.name}
+              {hasHookEmail && <span className="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded">Custom</span>}
+              {!hasHookEmail && <span className="text-xs bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">Template</span>}
             </h4>
             <div className="bg-white rounded border border-slate-200 p-2 mb-2">
               <p className="text-xs text-slate-500">Subject:</p>
@@ -190,6 +220,8 @@ function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: n
             <h4 className="font-medium text-slate-900 mb-2 text-sm flex items-center gap-2">
               <span className="w-2 h-2 bg-green-500 rounded-full"></span>
               {templates.proof.name}
+              {hasFollowUpEmail && <span className="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded">Custom</span>}
+              {!hasFollowUpEmail && <span className="text-xs bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">Template</span>}
             </h4>
             <div className="bg-white rounded border border-slate-200 p-2 mb-2">
               <p className="text-xs text-slate-500">Subject:</p>
