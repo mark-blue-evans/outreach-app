@@ -18,6 +18,8 @@ model Contact {
   initialContact   String?
   followUp         String?
   notes            String?
+  hookEmail        String?
+  followUpEmail    String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
