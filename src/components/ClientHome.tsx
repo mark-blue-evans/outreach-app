@@ -120,28 +120,30 @@ function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: n
 
       {expanded && (
         <div className="border-t border-slate-200 p-3 bg-slate-50">
-          {/* Status toggles */}
-          <div className="flex gap-2 mb-3 pb-3 border-b border-slate-200">
-            <button
-              onClick={() => toggleContact('initialContact')}
-              className={`text-xs px-2 py-1 rounded border ${
-                contact.initialContact 
-                  ? 'bg-green-100 border-green-300 text-green-800' 
-                  : 'bg-white border-slate-300 text-slate-600'
-              }`}
-            >
-              {contact.initialContact ? '✓ Contacted' : 'Mark Contacted'}
-            </button>
-            <button
-              onClick={() => toggleContact('followUp')}
-              className={`text-xs px-2 py-1 rounded border ${
-                contact.followUp 
-                  ? 'bg-blue-100 border-blue-300 text-blue-800' 
-                  : 'bg-white border-slate-300 text-slate-600'
-              }`}
-            >
-              {contact.followUp ? '↻ Follow-up' : 'Mark Follow-up'}
-            </button>
+          {/* Status checkboxes */}
+          <div className="flex gap-4 mb-3 pb-3 border-b border-slate-200">
+            <label className="flex items-center gap-2 text-xs cursor-pointer">
+              <input
+                type="checkbox"
+                checked={!!contact.initialContact}
+                onChange={() => toggleContact('initialContact')}
+                className="w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500"
+              />
+              <span className={contact.initialContact ? 'text-green-700 font-medium' : 'text-slate-600'}>
+                Initial Contact {contact.initialContact && `(${contact.initialContact})`}
+              </span>
+            </label>
+            <label className="flex items-center gap-2 text-xs cursor-pointer">
+              <input
+                type="checkbox"
+                checked={!!contact.followUp}
+                onChange={() => toggleContact('followUp')}
+                className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+              />
+              <span className={contact.followUp ? 'text-blue-700 font-medium' : 'text-slate-600'}>
+                Follow Up {contact.followUp && `(${contact.followUp})`}
+              </span>
+            </label>
           </div>
 
           {/* The Hook Template */}
@@ -237,7 +239,11 @@ export function ClientHome({ contacts, cities, onUpdate }: { contacts: Contact[]
       <header className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-3">
           <h1 className="text-lg font-bold text-slate-900">Outreach Email Generator</h1>
-          <p className="text-xs text-slate-500">{contacts.length} contacts</p>
+          <div className="flex gap-4 mt-1 text-xs text-slate-500">
+            <span>{contacts.length} total</span>
+            <span className="text-green-600">{contacts.filter(c => c.initialContact).length} contacted</span>
+            <span className="text-blue-600">{contacts.filter(c => c.followUp).length} follow-up</span>
+          </div>
         </div>
       </header>
 
