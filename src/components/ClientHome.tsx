@@ -1,6 +1,6 @@
 'use client'
 
-import { Copy, Mail, Search, MapPin, Building2, Globe, ChevronDown, ChevronUp } from 'lucide-react'
+import { Copy, Mail, Search, MapPin, Building2, ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
 
 type Contact = {
@@ -16,7 +16,6 @@ type Contact = {
   notes: string | null
 }
 
-// Email templates
 const templates = {
   hook: {
     name: "The Hook",
@@ -48,7 +47,7 @@ Radu`
   }
 }
 
-function ContactCard({ contact }: { contact: Contact }) {
+function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: number, field: 'initialContact' | 'followUp', value: string | null) => void }) {
   const [expanded, setExpanded] = useState(false)
   const [copied, setCopied] = useState<string | null>(null)
 
@@ -61,6 +60,11 @@ function ContactCard({ contact }: { contact: Contact }) {
   const openEmail = (subject: string, body: string) => {
     const mailto = `mailto:${contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     window.open(mailto)
+  }
+
+  const toggleContact = (field: 'initialContact' | 'followUp') => {
+    const newValue = contact[field] ? null : new Date().toISOString().split('T')[0]
+    onUpdate(contact.id, field, newValue)
   }
 
   const hookData = {
@@ -116,6 +120,30 @@ function ContactCard({ contact }: { contact: Contact }) {
 
       {expanded && (
         <div className="border-t border-slate-200 p-3 bg-slate-50">
+          {/* Status toggles */}
+          <div className="flex gap-2 mb-3 pb-3 border-b border-slate-200">
+            <button
+              onClick={() => toggleContact('initialContact')}
+              className={`text-xs px-2 py-1 rounded border ${
+                contact.initialContact 
+                  ? 'bg-green-100 border-green-300 text-green-800' 
+                  : 'bg-white border-slate-300 text-slate-600'
+              }`}
+            >
+              {contact.initialContact ? '✓ Contacted' : 'Mark Contacted'}
+            </button>
+            <button
+              onClick={() => toggleContact('followUp')}
+              className={`text-xs px-2 py-1 rounded border ${
+                contact.followUp 
+                  ? 'bg-blue-100 border-blue-300 text-blue-800' 
+                  : 'bg-white border-slate-300 text-slate-600'
+              }`}
+            >
+              {contact.followUp ? '↻ Follow-up' : 'Mark Follow-up'}
+            </button>
+          </div>
+
           {/* The Hook Template */}
           <div className="mb-4">
             <h4 className="font-medium text-slate-900 mb-2 text-sm flex items-center gap-2">
@@ -192,7 +220,7 @@ function ContactCard({ contact }: { contact: Contact }) {
   )
 }
 
-export function ClientHome({ contacts, cities }: { contacts: Contact[], cities: string[] }) {
+export function ClientHome({ contacts, cities, onUpdate }: { contacts: Contact[], cities: string[], onUpdate: (id: number, field: 'initialContact' | 'followUp', value: string | null) => void }) {
   const [search, setSearch] = useState('')
   const [cityFilter, setCityFilter] = useState('')
 
@@ -239,7 +267,7 @@ export function ClientHome({ contacts, cities }: { contacts: Contact[], cities: 
 
         <div className="space-y-2">
           {filteredContacts.map(contact => (
-            <ContactCard key={contact.id} contact={contact} />
+            <ContactCard key={contact.id} contact={contact} onUpdate={onUpdate} />
           ))}
         </div>
 

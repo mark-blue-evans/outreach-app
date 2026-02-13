@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Contact {
@@ -14,8 +15,8 @@ model Contact {
   websiteGenerator String?
   businessType     String?
   city             String?
-  initialContact   String   @default("No")
-  followUp         String   @default("No")
+  initialContact   String?
+  followUp         String?
   notes            String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
