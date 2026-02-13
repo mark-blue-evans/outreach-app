@@ -1,6 +1,6 @@
 'use client'
 
-import { Copy, Mail, Search, MapPin, Building2, Globe, ChevronDown, ChevronUp, Check, X } from 'lucide-react'
+import { Copy, Mail, Search, MapPin, Building2, Globe, ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
 
 type Contact = {
@@ -48,7 +48,7 @@ Radu`
   }
 }
 
-function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: number, field: 'initialContact' | 'followUp', value: string | null) => void }) {
+function ContactCard({ contact }: { contact: Contact }) {
   const [expanded, setExpanded] = useState(false)
   const [copied, setCopied] = useState<string | null>(null)
 
@@ -61,11 +61,6 @@ function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: n
   const openEmail = (subject: string, body: string) => {
     const mailto = `mailto:${contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     window.open(mailto)
-  }
-
-  const toggleContact = (field: 'initialContact' | 'followUp') => {
-    const newValue = contact[field] ? null : new Date().toISOString().split('T')[0]
-    onUpdate(contact.id, field, newValue)
   }
 
   const hookData = {
@@ -82,150 +77,112 @@ function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: n
   return (
     <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
       <div 
-        className="p-4 cursor-pointer hover:bg-slate-50 transition-colors"
+        className="p-3 cursor-pointer hover:bg-slate-50 transition-colors"
         onClick={() => setExpanded(!expanded)}
       >
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <h3 className="font-semibold text-slate-900">{contact.businessName}</h3>
-            <div className="flex flex-wrap gap-2 mt-2">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-slate-900 truncate">{contact.businessName}</h3>
+            <div className="flex flex-wrap gap-1 mt-1">
               {contact.businessType && (
-                <span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                  <Building2 size={12} />
+                <span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">
+                  <Building2 size={10} />
                   {contact.businessType}
                 </span>
               )}
               {contact.city && (
-                <span className="inline-flex items-center gap-1 text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                  <MapPin size={12} />
+                <span className="inline-flex items-center gap-1 text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded">
+                  <MapPin size={10} />
                   {contact.city}
                 </span>
               )}
-              {contact.websiteGenerator && (
-                <span className="inline-flex items-center gap-1 text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
-                  <Globe size={12} />
-                  {contact.websiteGenerator.length > 20 ? contact.websiteGenerator.substring(0, 20) + '...' : contact.websiteGenerator}
-                </span>
-              )}
             </div>
-            <p className="text-sm text-slate-500 mt-2">{contact.email}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {contact.initialContact && (
-              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full flex items-center gap-1">
-                <Check size={12} />
-                Contacted {contact.initialContact}
+              <span className="text-xs bg-green-500 text-white px-2 py-1 rounded font-medium">
+                ✓ {contact.initialContact}
               </span>
             )}
-            {expanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            {contact.followUp && (
+              <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded font-medium">
+                ↻ {contact.followUp}
+              </span>
+            )}
+            {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </div>
         </div>
       </div>
 
       {expanded && (
-        <div className="border-t border-slate-200 p-4 bg-slate-50">
-          {/* Status Checkboxes */}
-          <div className="flex gap-4 mb-4 pb-4 border-b border-slate-200">
-            <button
-              onClick={() => toggleContact('initialContact')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
-                contact.initialContact 
-                  ? 'bg-green-100 border-green-300 text-green-800' 
-                  : 'bg-white border-slate-300 text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              {contact.initialContact ? <Check size={16} /> : <X size={16} />}
-              Initial Contact
-              {contact.initialContact && <span className="text-xs">({contact.initialContact})</span>}
-            </button>
-            <button
-              onClick={() => toggleContact('followUp')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
-                contact.followUp 
-                  ? 'bg-blue-100 border-blue-300 text-blue-800' 
-                  : 'bg-white border-slate-300 text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              {contact.followUp ? <Check size={16} /> : <X size={16} />}
-              Follow Up
-              {contact.followUp && <span className="text-xs">({contact.followUp})</span>}
-            </button>
-          </div>
-
+        <div className="border-t border-slate-200 p-3 bg-slate-50">
           {/* The Hook Template */}
-          <div className="mb-6">
-            <h4 className="font-medium text-slate-900 mb-3 flex items-center gap-2">
+          <div className="mb-4">
+            <h4 className="font-medium text-slate-900 mb-2 text-sm flex items-center gap-2">
               <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
               {templates.hook.name}
             </h4>
-            <div className="bg-white rounded-md border border-slate-200 p-3 mb-3">
-              <p className="text-xs text-slate-500 mb-1">Subject:</p>
+            <div className="bg-white rounded border border-slate-200 p-2 mb-2">
+              <p className="text-xs text-slate-500">Subject:</p>
               <p className="text-sm text-slate-900">{hookSubject}</p>
             </div>
-            <div className="bg-white rounded-md border border-slate-200 p-3 mb-3">
-              <p className="text-xs text-slate-500 mb-1">Body:</p>
+            <div className="bg-white rounded border border-slate-200 p-2 mb-2">
+              <p className="text-xs text-slate-500">Body:</p>
               <p className="text-sm text-slate-900 whitespace-pre-wrap">{hookBody}</p>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex gap-2">
               <button
                 onClick={() => copyToClipboard(hookSubject, 'hook-subject')}
-                className="inline-flex items-center gap-1 text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1.5 rounded transition-colors"
+                className="flex items-center gap-1 text-xs bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded"
               >
-                <Copy size={14} />
+                <Copy size={12} />
                 {copied === 'hook-subject' ? 'Copied!' : 'Copy Subject'}
               </button>
               <button
                 onClick={() => copyToClipboard(hookBody, 'hook-body')}
-                className="inline-flex items-center gap-1 text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1.5 rounded transition-colors"
+                className="flex items-center gap-1 text-xs bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded"
               >
-                <Copy size={14} />
+                <Copy size={12} />
                 {copied === 'hook-body' ? 'Copied!' : 'Copy Body'}
               </button>
               <button
                 onClick={() => openEmail(hookSubject, hookBody)}
-                className="inline-flex items-center gap-1 text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded transition-colors"
+                className="flex items-center gap-1 text-xs bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded"
               >
-                <Mail size={14} />
-                Open in Email
+                <Mail size={12} />
+                Open
               </button>
             </div>
           </div>
 
           {/* The Proof Template */}
           <div>
-            <h4 className="font-medium text-slate-900 mb-3 flex items-center gap-2">
+            <h4 className="font-medium text-slate-900 mb-2 text-sm flex items-center gap-2">
               <span className="w-2 h-2 bg-green-500 rounded-full"></span>
               {templates.proof.name}
             </h4>
-            <div className="bg-white rounded-md border border-slate-200 p-3 mb-3">
-              <p className="text-xs text-slate-500 mb-1">Subject:</p>
+            <div className="bg-white rounded border border-slate-200 p-2 mb-2">
+              <p className="text-xs text-slate-500">Subject:</p>
               <p className="text-sm text-slate-900">{proofSubject}</p>
             </div>
-            <div className="bg-white rounded-md border border-slate-200 p-3 mb-3">
-              <p className="text-xs text-slate-500 mb-1">Body:</p>
+            <div className="bg-white rounded border border-slate-200 p-2 mb-2">
+              <p className="text-xs text-slate-500">Body:</p>
               <p className="text-sm text-slate-900 whitespace-pre-wrap">{proofBody}</p>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex gap-2">
               <button
                 onClick={() => copyToClipboard(proofSubject, 'proof-subject')}
-                className="inline-flex items-center gap-1 text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1.5 rounded transition-colors"
+                className="flex items-center gap-1 text-xs bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded"
               >
-                <Copy size={14} />
+                <Copy size={12} />
                 {copied === 'proof-subject' ? 'Copied!' : 'Copy Subject'}
               </button>
               <button
-                onClick={() => copyToClipboard(proofBody, 'proof-body')}
-                className="inline-flex items-center gap-1 text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1.5 rounded transition-colors"
-              >
-                <Copy size={14} />
-                {copied === 'proof-body' ? 'Copied!' : 'Copy Body'}
-              </button>
-              <button
                 onClick={() => openEmail(proofSubject, proofBody)}
-                className="inline-flex items-center gap-1 text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded transition-colors"
+                className="flex items-center gap-1 text-xs bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded"
               >
-                <Mail size={14} />
-                Open in Email
+                <Mail size={12} />
+                Open
               </button>
             </div>
           </div>
@@ -235,10 +192,9 @@ function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: n
   )
 }
 
-export function ClientHome({ contacts: initialContacts, cities, onUpdate }: { contacts: Contact[], cities: string[], onUpdate: (id: number, field: 'initialContact' | 'followUp', value: string | null) => void }) {
+export function ClientHome({ contacts, cities }: { contacts: Contact[], cities: string[] }) {
   const [search, setSearch] = useState('')
   const [cityFilter, setCityFilter] = useState('')
-  const [contacts, setContacts] = useState(initialContacts)
 
   const filteredContacts = contacts.filter(contact => {
     const matchesSearch = !search || 
@@ -248,36 +204,31 @@ export function ClientHome({ contacts: initialContacts, cities, onUpdate }: { co
     return matchesSearch && matchesCity
   })
 
-  const handleUpdate = (id: number, field: 'initialContact' | 'followUp', value: string | null) => {
-    setContacts(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c))
-    onUpdate(id, field, value)
-  }
-
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <h1 className="text-xl font-bold text-slate-900">Outreach Email Generator</h1>
-          <p className="text-sm text-slate-500">{contacts.length} contacts in database</p>
+        <div className="max-w-4xl mx-auto px-4 py-3">
+          <h1 className="text-lg font-bold text-slate-900">Outreach Email Generator</h1>
+          <p className="text-xs text-slate-500">{contacts.length} contacts</p>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-6">
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <main className="max-w-4xl mx-auto px-4 py-4">
+        <div className="flex gap-2 mb-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
             <input
               type="text"
-              placeholder="Search by business name or email..."
+              placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-8 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <select
             value={cityFilter}
             onChange={(e) => setCityFilter(e.target.value)}
-            className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            className="px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white"
           >
             <option value="">All Cities</option>
             {cities.map(city => (
@@ -286,9 +237,9 @@ export function ClientHome({ contacts: initialContacts, cities, onUpdate }: { co
           </select>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-2">
           {filteredContacts.map(contact => (
-            <ContactCard key={contact.id} contact={contact} onUpdate={handleUpdate} />
+            <ContactCard key={contact.id} contact={contact} />
           ))}
         </div>
 
