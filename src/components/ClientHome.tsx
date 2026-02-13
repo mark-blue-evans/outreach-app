@@ -51,6 +51,7 @@ Radu`
 
 function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: number, field: 'initialContact' | 'followUp', value: string | null) => void }) {
   const [expanded, setExpanded] = useState(false)
+  const [followUpExpanded, setFollowUpExpanded] = useState(false)
   const [copied, setCopied] = useState<string | null>(null)
 
   const copyToClipboard = async (text: string, type: string) => {
@@ -232,34 +233,44 @@ function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: n
             </div>
 
             <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
-              <div className="bg-slate-100 px-4 py-2 border-b border-slate-200 flex items-center justify-between">
+              <div 
+                className="bg-slate-100 px-4 py-2 border-b border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-200 transition-colors"
+                onClick={(e) => { e.stopPropagation(); setFollowUpExpanded(!followUpExpanded) }}
+              >
                 <h4 className="font-semibold text-slate-800 flex items-center gap-2">
                   <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
                   Follow-up Email
+                  <span className="text-slate-400 ml-1">
+                    {followUpExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                  </span>
                 </h4>
-                <div className="flex gap-1.5">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); copyToClipboard(proofSubject, 'proof-subject') }}
-                    className="flex items-center gap-1 text-xs bg-white border border-slate-200 hover:bg-slate-50 px-2 py-1 rounded"
-                  >
-                    <Copy size={10} />
-                    {copied === 'proof-subject' ? 'Copied!' : 'Copy'}
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); openEmail(proofSubject, proofBody) }}
-                    className="flex items-center gap-1 text-xs bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded font-medium"
-                  >
-                    <Mail size={10} />
-                    Send
-                  </button>
+                {followUpExpanded && (
+                  <div className="flex gap-1.5">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); copyToClipboard(proofSubject, 'proof-subject') }}
+                      className="flex items-center gap-1 text-xs bg-white border border-slate-200 hover:bg-slate-50 px-2 py-1 rounded"
+                    >
+                      <Copy size={10} />
+                      {copied === 'proof-subject' ? 'Copied!' : 'Copy'}
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); openEmail(proofSubject, proofBody) }}
+                      className="flex items-center gap-1 text-xs bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded font-medium"
+                    >
+                      <Mail size={10} />
+                      Send
+                    </button>
+                  </div>
+                )}
+              </div>
+              {followUpExpanded && (
+                <div className="p-3">
+                  <p className="text-xs text-slate-500 mb-1">Subject:</p>
+                  <p className="text-sm font-medium text-slate-800 mb-3">{proofSubject}</p>
+                  <p className="text-xs text-slate-500 mb-1">Body:</p>
+                  <p className="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed">{proofBody}</p>
                 </div>
-              </div>
-              <div className="p-3">
-                <p className="text-xs text-slate-500 mb-1">Subject:</p>
-                <p className="text-sm font-medium text-slate-800 mb-3">{proofSubject}</p>
-                <p className="text-xs text-slate-500 mb-1">Body:</p>
-                <p className="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed">{proofBody}</p>
-              </div>
+              )}
             </div>
           </div>
         </div>
