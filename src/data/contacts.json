@@ -29,11 +29,11 @@
     "email": "jacob@vertiworks.uk",
     "website": "https://www.vertiworks.uk/",
     "websiteGenerator": "Wix.com Website Builder",
-    "businessType": "driveway",
+    "businessType": "roofing",
     "city": "Nottingham",
     "initialContact": null,
     "followUp": null,
-    "notes": ""
+    "notes": "Roof treatments, guttering, solar - NOT driveway"
   },
   {
     "id": 4,
@@ -41,11 +41,11 @@
     "email": "sales@stardustcleaning.co.uk",
     "website": "https://stardustcleaning.co.uk/",
     "websiteGenerator": "WordPress 6.9",
-    "businessType": "driveway",
+    "businessType": "pressure washing",
     "city": "Nottingham",
     "initialContact": null,
     "followUp": null,
-    "notes": ""
+    "notes": "Pressure washing service - patios, driveways, roofs"
   },
   {
     "id": 5,
@@ -101,11 +101,11 @@
     "email": "chelsea@chelseacontractors.com",
     "website": "https://www.chelseacontractors.com/",
     "websiteGenerator": "Redux 4.5.9",
-    "businessType": "driveway",
+    "businessType": "construction",
     "city": "London",
     "initialContact": null,
     "followUp": null,
-    "notes": ""
+    "notes": "General contractor - groundwork, demolition, piling"
   },
   {
     "id": 10,
@@ -113,11 +113,11 @@
     "email": "info@royalstonecare.co.uk",
     "website": "https://royalstonecare.co.uk/",
     "websiteGenerator": "WordPress 6.8.3",
-    "businessType": "driveway",
+    "businessType": "stone restoration",
     "city": "London",
     "initialContact": null,
     "followUp": null,
-    "notes": ""
+    "notes": "Marble/quartz restoration - NOT driveway company"
   },
   {
     "id": 11,
