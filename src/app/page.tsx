@@ -4,6 +4,9 @@ import { Pool } from 'pg'
 import { ClientHome } from '@/components/ClientHome'
 import 'dotenv/config'
 
+// Disable static generation - always render on request
+export const dynamic = 'force-dynamic'
+
 const connectionString = process.env.DATABASE_URL
 
 type Contact = {
