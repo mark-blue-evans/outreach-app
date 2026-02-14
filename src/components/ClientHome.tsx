@@ -120,7 +120,7 @@ function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: n
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <h3 className="font-bold text-slate-900 text-lg truncate">{contact.businessName}</h3>
-            <div className="flex items-center gap-2 text-sm text-slate-500 truncate mt-0.5">
+            <div className="flex items-center gap-2 text-sm text-slate-500 mt-0.5">
               <button 
                 onClick={(e) => { e.stopPropagation(); copyToClipboard(contact.email, 'email-' + contact.id) }}
                 className={`hover:text-indigo-600 transition-colors font-medium ${copied === 'email-' + contact.id ? 'text-green-600' : ''}`}
@@ -136,7 +136,7 @@ function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: n
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="hover:text-indigo-600 transition-colors truncate max-w-[200px] text-blue-600 hover:underline"
+                    className="hover:text-indigo-600 transition-colors text-blue-600 hover:underline"
                     title="Click to open website"
                   >
                     {contact.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
