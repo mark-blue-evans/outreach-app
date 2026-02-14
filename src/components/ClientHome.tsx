@@ -1,7 +1,9 @@
 'use client'
 
-import { Copy, Mail, Search, MapPin, Building2, ChevronDown, ChevronUp, Send, CheckCircle, Clock, Users } from 'lucide-react'
-import { useState } from 'react'
+import { Copy, Mail, Search, MapPin, Building2, ChevronDown, ChevronUp, Send, CheckCircle, Clock, Users, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useState, useMemo } from 'react'
+
+const CONTACTS_PER_PAGE = 20
 
 type Contact = {
   id: number
@@ -300,17 +302,26 @@ export function ClientHome({ contacts, cities, onUpdate }: { contacts: Contact[]
   const [search, setSearch] = useState('')
   const [cityFilter, setCityFilter] = useState('')
   const [typeFilter, setTypeFilter] = useState('')
+  const [page, setPage] = useState(1)
 
   const businessTypes = [...new Set(contacts.map(c => c.businessType).filter(Boolean))] as string[]
 
-  const filteredContacts = contacts.filter(contact => {
-    const matchesSearch = !search || 
-      contact.businessName.toLowerCase().includes(search.toLowerCase()) ||
-      contact.email.toLowerCase().includes(search.toLowerCase())
-    const matchesCity = !cityFilter || contact.city === cityFilter
-    const matchesType = !typeFilter || contact.businessType === typeFilter
-    return matchesSearch && matchesCity && matchesType
-  })
+  const filteredContacts = useMemo(() => {
+    return contacts.filter(contact => {
+      const matchesSearch = !search || 
+        contact.businessName.toLowerCase().includes(search.toLowerCase()) ||
+        contact.email.toLowerCase().includes(search.toLowerCase())
+      const matchesCity = !cityFilter || contact.city === cityFilter
+      const matchesType = !typeFilter || contact.businessType === typeFilter
+      return matchesSearch && matchesCity && matchesType
+    })
+  }, [contacts, search, cityFilter, typeFilter])
+
+  const totalPages = Math.ceil(filteredContacts.length / CONTACTS_PER_PAGE)
+  const paginatedContacts = useMemo(() => {
+    const start = (page - 1) * CONTACTS_PER_PAGE
+    return filteredContacts.slice(start, start + CONTACTS_PER_PAGE)
+  }, [filteredContacts, page])
 
   const contactedCount = contacts.filter(c => c.initialContact).length
   const pendingCount = contacts.length - contactedCount
@@ -382,7 +393,7 @@ export function ClientHome({ contacts, cities, onUpdate }: { contacts: Contact[]
                 type="text"
                 placeholder="Search by name or email..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => { setSearch(e.target.value); setPage(1) }}
                 className="w-full pl-10 pr-4 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
@@ -390,7 +401,7 @@ export function ClientHome({ contacts, cities, onUpdate }: { contacts: Contact[]
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
               <select
                 value={cityFilter}
-                onChange={(e) => setCityFilter(e.target.value)}
+                onChange={(e) => { setCityFilter(e.target.value); setPage(1) }}
                 className="pl-9 pr-8 py-2.5 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
               >
                 <option value="">All Cities</option>
@@ -403,7 +414,7 @@ export function ClientHome({ contacts, cities, onUpdate }: { contacts: Contact[]
               <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
               <select
                 value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
+                onChange={(e) => { setTypeFilter(e.target.value); setPage(1) }}
                 className="pl-9 pr-8 py-2.5 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
               >
                 <option value="">All Types</option>
@@ -431,7 +442,7 @@ export function ClientHome({ contacts, cities, onUpdate }: { contacts: Contact[]
 
       <main className="max-w-5xl mx-auto px-6 pb-8">
         <div className="space-y-3">
-          {filteredContacts.map(contact => (
+          {paginatedContacts.map(contact => (
             <ContactCard key={contact.id} contact={contact} onUpdate={onUpdate} />
           ))}
         </div>
@@ -443,6 +454,30 @@ export function ClientHome({ contacts, cities, onUpdate }: { contacts: Contact[]
             </div>
             <h3 className="text-lg font-semibold text-slate-800 mb-2">No leads found</h3>
             <p className="text-slate-500">Try adjusting your filters or search term</p>
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-6">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="flex items-center gap-1 px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft size={16} />
+              Previous
+            </button>
+            <span className="text-sm text-slate-600 px-3">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="flex items-center gap-1 px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+              <ChevronRight size={16} />
+            </button>
           </div>
         )}
       </main>
