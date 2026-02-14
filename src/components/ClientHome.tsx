@@ -300,12 +300,14 @@ export function ClientHome({
   contacts, 
   cities, 
   onUpdate,
+  totalContacts,
   pagination,
   onPageChange
 }: { 
   contacts: Contact[], 
   cities: string[], 
   onUpdate: (id: number, field: 'initialContact' | 'followUp', value: string | null) => void,
+  totalContacts?: number,
   pagination?: {
     page: number
     limit: number
@@ -334,6 +336,7 @@ export function ClientHome({
 
   const contactedCount = contacts.filter(c => c.initialContact).length
   const pendingCount = contacts.length - contactedCount
+  const total = totalContacts || contacts.length
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-slate-100">
@@ -348,7 +351,7 @@ export function ClientHome({
             </div>
             <div className="flex items-center gap-2 text-sm text-slate-500">
               <span className="bg-slate-100 px-3 py-1.5 rounded-full font-medium">
-                {contacts.length} leads
+                {total} leads
               </span>
             </div>
           </div>
@@ -363,7 +366,7 @@ export function ClientHome({
                 <Users className="w-6 h-6 text-indigo-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-800">{contacts.length}</p>
+                <p className="text-2xl font-bold text-slate-800">{total}</p>
                 <p className="text-sm text-slate-500">Total Leads</p>
               </div>
             </div>
@@ -443,7 +446,7 @@ export function ClientHome({
           </div>
           {filteredContacts.length !== contacts.length && (
             <p className="text-sm text-slate-500 mt-3">
-              Showing {filteredContacts.length} of {contacts.length} leads
+              Showing {filteredContacts.length} of {total} leads
             </p>
           )}
         </div>

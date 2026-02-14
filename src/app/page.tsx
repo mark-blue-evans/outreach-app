@@ -102,6 +102,7 @@ export default function Home() {
       contacts={contacts} 
       cities={cities} 
       onUpdate={handleUpdate}
+      totalContacts={pagination?.total || contacts.length}
       pagination={pagination}
       onPageChange={handlePageChange}
     />
