@@ -120,7 +120,27 @@ function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: n
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <h3 className="font-bold text-slate-900 text-lg truncate">{contact.businessName}</h3>
-            <p className="text-sm text-slate-500 truncate mt-0.5">{contact.email}</p>
+            <div className="flex items-center gap-2 text-sm text-slate-500 truncate mt-0.5">
+              <button 
+                onClick={(e) => { e.stopPropagation(); copyToClipboard(contact.email, 'email') }}
+                className="hover:text-indigo-600 transition-colors"
+                title="Click to copy email"
+              >
+                {contact.email}
+              </button>
+              {contact.website && (
+                <>
+                  <span className="text-slate-300">|</span>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); copyToClipboard(contact.website!, 'website') }}
+                    className="hover:text-indigo-600 transition-colors truncate max-w-[200px]"
+                    title="Click to copy website"
+                  >
+                    {contact.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                  </button>
+                </>
+              )}
+            </div>
             <div className="flex flex-wrap gap-2 mt-2">
               {contact.businessType && (
                 <span className="inline-flex items-center gap-1.5 text-xs font-medium bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full">
@@ -134,11 +154,15 @@ function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: n
                   {contact.city}
                 </span>
               )}
-              {hasHookEmail && (
-                <span className="inline-flex items-center gap-1.5 text-xs font-medium bg-violet-50 text-violet-700 px-2.5 py-1 rounded-full">
-                  <CheckCircle size={12} />
-                  Custom Email
-                </span>
+              {contact.website && (
+                <button 
+                  onClick={(e) => { e.stopPropagation(); copyToClipboard(contact.website!, 'website') }}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full hover:bg-blue-100 transition-colors"
+                  title="Click to copy website"
+                >
+                  <Copy size={12} />
+                  {copied === 'website' ? 'Copied!' : 'Website'}
+                </button>
               )}
             </div>
           </div>
