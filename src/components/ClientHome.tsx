@@ -157,16 +157,6 @@ function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: n
                   {contact.city}
                 </span>
               )}
-              {contact.website && (
-                <button 
-                  onClick={(e) => { e.stopPropagation(); copyToClipboard(contact.website!, 'website') }}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full hover:bg-blue-100 transition-colors"
-                  title="Click to copy website"
-                >
-                  <Copy size={12} />
-                  {copied === 'website' ? 'Copied!' : 'Website'}
-                </button>
-              )}
             </div>
           </div>
           <div className="flex flex-col items-end gap-2 shrink-0">
