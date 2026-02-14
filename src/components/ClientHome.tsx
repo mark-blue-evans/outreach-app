@@ -122,22 +122,25 @@ function ContactCard({ contact, onUpdate }: { contact: Contact, onUpdate: (id: n
             <h3 className="font-bold text-slate-900 text-lg truncate">{contact.businessName}</h3>
             <div className="flex items-center gap-2 text-sm text-slate-500 truncate mt-0.5">
               <button 
-                onClick={(e) => { e.stopPropagation(); copyToClipboard(contact.email, 'email') }}
-                className="hover:text-indigo-600 transition-colors"
+                onClick={(e) => { e.stopPropagation(); copyToClipboard(contact.email, 'email-' + contact.id) }}
+                className={`hover:text-indigo-600 transition-colors font-medium ${copied === 'email-' + contact.id ? 'text-green-600' : ''}`}
                 title="Click to copy email"
               >
-                {contact.email}
+                {copied === 'email-' + contact.id ? '✓ Copied!' : contact.email}
               </button>
               {contact.website && (
                 <>
                   <span className="text-slate-300">|</span>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); copyToClipboard(contact.website!, 'website') }}
-                    className="hover:text-indigo-600 transition-colors truncate max-w-[200px]"
-                    title="Click to copy website"
+                  <a 
+                    href={contact.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="hover:text-indigo-600 transition-colors truncate max-w-[200px] text-blue-600 hover:underline"
+                    title="Click to open website"
                   >
                     {contact.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
-                  </button>
+                  </a>
                 </>
               )}
             </div>
